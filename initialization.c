@@ -86,7 +86,7 @@ void putParticles(int* lattice, ecoli* ecoliList, const status* pstatus)
       randomX=floor(LatticeDim*genrand64_real2());
       randomY=floor(LatticeDim*genrand64_real2());
       idx=randomY*LatticeDim+randomX;   //index in lattice array
-    } while (!lattice[idx]);
+    } while (0!=lattice[idx]);
     lattice[idx]=i;   //the site is occupied
     ecoliList[i].posX=randomX;
     ecoliList[i].posY=randomY;
