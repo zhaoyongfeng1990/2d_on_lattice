@@ -5,16 +5,21 @@
 #include "lattice2d.h"
 
 
-int main()
+int main(int argc, const char * argv[])
 {
   time_t it, ft;
   it=time(0);
+
   status cstatus;   //the structure for status of current system
-  setDefaultStatus(&cstatus);
-  int* lattice=(int*) malloc(cstatus.NumSite*sizeof(int));  //0: empty; 1: blocked; 2:occupied
+  int* lattice=(int*) malloc(cstatus.NumSite*sizeof(int));  //0: empty; -1: blocked; n: occupied by n-th cell
   ecoli* ecoliList=(ecoli*) malloc(cstatus.NumOfCells*sizeof(ecoli));
+  setDefaultStatus(&cstatus);
+
   generateLattice(lattice, &cstatus);
   putParticles(lattice, ecoliList, &cstatus);
+  checkingIfBlocked(&cstatus, lattice, ecoliList);
+
+
 
   //snapshotLattices(lattice, ecoliList, &cstatus, 0);
   double totalTime=100;
@@ -42,7 +47,7 @@ int main()
   /////////////////////
 
   /////////////////////
-
+  destructeStatus(&cstatus);
   free(lattice);
   free(ecoliList);
 
