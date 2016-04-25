@@ -1,5 +1,5 @@
 #include <math.h>
-
+#include <stdio.h>
 #include "lattice2d.h"
 #include "mt64.h"
 
@@ -18,7 +18,6 @@ int iterate(int* lattice, ecoli* ecoliList, status* pstatus)
   double tumblingProb=NumOfCells * TumblingRate;
   double diagProb=NumOfMovingCellsDiag * diagHoppingRate + tumblingProb;
   double totalProb=NumOfMovingCellsEdge * HoppingRate + diagProb;
-
   double r1=genrand64_real3();
   double tau=-log(r1)/totalProb;  //time increment
   pstatus->time+=tau;
@@ -30,8 +29,7 @@ int iterate(int* lattice, ecoli* ecoliList, status* pstatus)
   {
     int idx=floor(threshold/TumblingRate);
     sampleDirection(&ecoliList[idx]);
-    checkingIfBlockedSingleCell(pstatus, lattice, ecoliList, idx);
-
+    checkIfBlockedSingleCell(pstatus, lattice, ecoliList, idx);
     return 0;
   }
   else   //hopping event
@@ -59,13 +57,13 @@ int iterate(int* lattice, ecoli* ecoliList, status* pstatus)
     int newY=(posY+ecoliList[i].directionY+LatticeDim)%LatticeDim;
     int newIndex=newY*LatticeDim+newX;
 
-    lattice[index]=0;     //now the previous site is empty
-    lattice[newIndex]=i;  //and the new site is occupied
+    //lattice[index]=0;     //now the previous site is empty
+    //lattice[newIndex]=i;  //and the new site is occupied
     ecoliList[i].posX=newX;
     ecoliList[i].posY=newY;
     ecoliList[i].deltaX+=ecoliList[i].directionX;
     ecoliList[i].deltaY+=ecoliList[i].directionY;
-    checkingIfBlockedSingleCell(pstatus, lattice, ecoliList, idx);
+    checkIfBlockedSingleCell(pstatus, lattice, ecoliList, i);
     return 1;
   }
   return -1;

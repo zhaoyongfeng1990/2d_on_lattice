@@ -12,7 +12,7 @@
 // static const double setGelConcentration=0.3;
 // static const double setTumblingRate=10;
 // static const double setHoppingRate=10;
-// 
+//
 // //two constant for speed
 // static const int setNumSite=setLatticeDim*setLatticeDim;
 // static const double setdiagHoppingRate=setHoppingRate/1.414213562373095;
@@ -54,10 +54,10 @@ void generateLattice(int* lattice, const status* pstatus);
 void putParticles(int* lattice, ecoli* ecoliList, const status* pstatus);
 
 //generate movingEcoliEdge and movingEcoliDiag
-void checkingIfBlocked(status* pstatus, const int* lattice, ecoli* ecoliList);
+void checkIfBlocked(status* pstatus, const int* lattice, ecoli* ecoliList);
 
 //modifying movingEcoliEdge and movingEcoliDiag after one event
-void checkingIfBlockedSingleCell(status* pstatus, const int* lattice, ecoli* ecoliList, const int idx);
+void checkIfBlockedSingleCell(status* pstatus, const int* lattice, ecoli* ecoliList, const int idx);
 
 //initialize pstatus with the pre-setting values
 void setDefaultStatus(status* pstatus);

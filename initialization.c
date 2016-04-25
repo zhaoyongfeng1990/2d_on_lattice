@@ -72,7 +72,7 @@ void sampleDirection(ecoli* cell)
   }
 }
 
-//put particles on lattices. lattice[idx]==2 means the site is occupied by a cell.
+//put particles on lattices.
 void putParticles(int* lattice, ecoli* ecoliList, const status* pstatus)
 {
   int NumOfCells=pstatus->NumOfCells;
@@ -87,7 +87,11 @@ void putParticles(int* lattice, ecoli* ecoliList, const status* pstatus)
       randomY=floor(LatticeDim*genrand64_real2());
       idx=randomY*LatticeDim+randomX;   //index in lattice array
     } while (0!=lattice[idx]);
-    lattice[idx]=i;   //the site is occupied
+
+    //Non-interacting particles: comment this line
+    //lattice[idx]=i;   //the site is occupied
+    //////
+
     ecoliList[i].posX=randomX;
     ecoliList[i].posY=randomY;
     ecoliList[i].deltaX=0;
@@ -106,12 +110,11 @@ void setDefaultStatus(status* pstatus)
   double setGelConcentration;
   double setTumblingRate;
   double setHoppingRate;
-
-  fscanf(parafile, "%d/n", &setLatticeDim);
-  fscanf(parafile, "%d/n", &setNumOfCells);
-  fscanf(parafile, "%lf/n", &setGelConcentration);
-  fscanf(parafile, "%lf/n", &setTumblingRate);
-  fscanf(parafile, "%lf/n", &setHoppingRate);
+  fscanf(parafile, "%d\n", &setLatticeDim);
+  fscanf(parafile, "%d\n", &setNumOfCells);
+  fscanf(parafile, "%lf\n", &setGelConcentration);
+  fscanf(parafile, "%lf\n", &setTumblingRate);
+  fscanf(parafile, "%lf\n", &setHoppingRate);
 
   fclose(parafile);
   int setNumSite=setLatticeDim*setLatticeDim;
@@ -138,7 +141,7 @@ void destructeStatus(status* pstatus)
   free(pstatus->movingEcoliDiag);
 }
 
-void checkingIfBlocked(status* pstatus, const int* lattice, ecoli* ecoliList)
+void checkIfBlocked(status* pstatus, const int* lattice, ecoli* ecoliList)
 {
   int NumOfCells=pstatus->NumOfCells;
   int LatticeDim=pstatus->LatticeDim;
@@ -153,7 +156,7 @@ void checkingIfBlocked(status* pstatus, const int* lattice, ecoli* ecoliList)
     int nextPosY=(ecoliList[i].posY+ecoliList[i].directionY+LatticeDim)%LatticeDim;
     int idx=nextPosY*LatticeDim+nextPosX;
     if (0==lattice[idx])   //cell can move
-    { 
+    {
       ecoliList[i].inEdgeOrDiag=ecoliList[i].ifDiagnal;
       ecoliList[i].ifMoving=1;
       if (ecoliList[i].ifDiagnal)
@@ -178,7 +181,7 @@ void checkingIfBlocked(status* pstatus, const int* lattice, ecoli* ecoliList)
   pstatus->NumOfMovingCellsDiag=NumOfMovingCellsDiag;
 }
 
-void checkingIfBlockedSingleCell(status* pstatus, const int* lattice, ecoli* ecoliList, const int idx)
+void checkIfBlockedSingleCell(status* pstatus, const int* lattice, ecoli* ecoliList, const int idx)
 {
   int LatticeDim=pstatus->LatticeDim;
   int NumOfMovingCellsEdge=pstatus->NumOfMovingCellsEdge;
@@ -199,15 +202,15 @@ void checkingIfBlockedSingleCell(status* pstatus, const int* lattice, ecoli* eco
         if (ecoliList[idx].inEdgeOrDiag)
         {
           //deleting from movingEcoliDiag
+          ecoliList[movingEcoliDiag[NumOfMovingCellsDiag-1]].whereInMove=ecoliList[idx].whereInMove;
           movingEcoliDiag[ecoliList[idx].whereInMove]=movingEcoliDiag[NumOfMovingCellsDiag-1];
           --NumOfMovingCellsDiag;
 
           //adding to movingEcoliEdge
-          movingEcoliEdge[NumOfMovingCellsEdge]=idx;
-          ++NumOfMovingCellsEdge;
-
           ecoliList[idx].whereInMove=NumOfMovingCellsEdge;
           ecoliList[idx].inEdgeOrDiag=0;
+          movingEcoliEdge[NumOfMovingCellsEdge]=idx;
+          ++NumOfMovingCellsEdge;
 
           pstatus->NumOfMovingCellsEdge=NumOfMovingCellsEdge;
           pstatus->NumOfMovingCellsDiag=NumOfMovingCellsDiag;
@@ -215,15 +218,15 @@ void checkingIfBlockedSingleCell(status* pstatus, const int* lattice, ecoli* eco
         else
         {
           //deleting from movingEcoliEdge
-          movingEcoliEdge[ecoliList[idx].whereInMove]=movingEcoliEdge[NumOfMovingCellsDiag-1];
+          ecoliList[movingEcoliEdge[NumOfMovingCellsEdge-1]].whereInMove=ecoliList[idx].whereInMove;
+          movingEcoliEdge[ecoliList[idx].whereInMove]=movingEcoliEdge[NumOfMovingCellsEdge-1];
           --NumOfMovingCellsEdge;
 
           //adding to movingEcoliDiag
-          movingEcoliDiag[NumOfMovingCellsDiag]=idx;
-          ++NumOfMovingCellsDiag;
-
           ecoliList[idx].whereInMove=NumOfMovingCellsDiag;
           ecoliList[idx].inEdgeOrDiag=1;
+          movingEcoliDiag[NumOfMovingCellsDiag]=idx;
+          ++NumOfMovingCellsDiag;
 
           pstatus->NumOfMovingCellsEdge=NumOfMovingCellsEdge;
           pstatus->NumOfMovingCellsDiag=NumOfMovingCellsDiag;
@@ -242,7 +245,7 @@ void checkingIfBlockedSingleCell(status* pstatus, const int* lattice, ecoli* eco
       }
       else
       {
-        movingEcoliEdge[ecoliList[idx].whereInMove]=movingEcoliEdge[NumOfMovingCellsDiag-1];
+        movingEcoliEdge[ecoliList[idx].whereInMove]=movingEcoliEdge[NumOfMovingCellsEdge-1];
         --NumOfMovingCellsEdge;
 
         pstatus->NumOfMovingCellsEdge=NumOfMovingCellsEdge;
@@ -256,21 +259,19 @@ void checkingIfBlockedSingleCell(status* pstatus, const int* lattice, ecoli* eco
       ecoliList[idx].ifMoving=1;
       if (ecoliList[idx].ifDiagnal)
       {
-        movingEcoliDiag[NumOfMovingCellsDiag]=idx;
-        ++NumOfMovingCellsDiag;
-
         ecoliList[idx].whereInMove=NumOfMovingCellsDiag;
         ecoliList[idx].inEdgeOrDiag=1;
+        movingEcoliDiag[NumOfMovingCellsDiag]=idx;
+        ++NumOfMovingCellsDiag;
 
         pstatus->NumOfMovingCellsDiag=NumOfMovingCellsDiag;
       }
       else
       {
-        movingEcoliEdge[NumOfMovingCellsEdge]=idx;
-        ++NumOfMovingCellsEdge;
-
         ecoliList[idx].whereInMove=NumOfMovingCellsEdge;
         ecoliList[idx].inEdgeOrDiag=0;
+        movingEcoliEdge[NumOfMovingCellsEdge]=idx;
+        ++NumOfMovingCellsEdge;
 
         pstatus->NumOfMovingCellsEdge=NumOfMovingCellsEdge;
       }
