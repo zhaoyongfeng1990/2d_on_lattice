@@ -20,7 +20,7 @@ int main(int argc, const char * argv[])
   checkIfBlocked(&cstatus, lattice, ecoliList);
 
   //snapshotLattices(lattice, ecoliList, &cstatus, 0);
-  double totalTime=10;
+  double totalTime=cstatus.totalTime;
   int fileIdx=0;
   FILE* outfile=fopen("result.txt","w");
   int step=0;
@@ -59,6 +59,6 @@ int main(int argc, const char * argv[])
   free(ecoliList);
 
   ft=time(0);
-  //printf("%ld\n",ft-it);
+  printf("%ld\n",ft-it);
   return 0;
 }

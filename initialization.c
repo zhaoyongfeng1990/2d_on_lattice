@@ -110,6 +110,8 @@ void setDefaultStatus(status* pstatus)
   double setGelConcentration;
   double setTumblingRate;
   double setHoppingRate;
+  double setTotalTime;
+  fscanf(parafile, "%lf\n", &setTotalTime);
   fscanf(parafile, "%d\n", &setLatticeDim);
   fscanf(parafile, "%d\n", &setNumOfCells);
   fscanf(parafile, "%lf\n", &setGelConcentration);
@@ -121,6 +123,7 @@ void setDefaultStatus(status* pstatus)
   double setdiagHoppingRate=setHoppingRate/1.414213562373095;
 
   pstatus->time=0;
+  pstatus->totalTime=setTotalTime;
   pstatus->GelConcentration=setGelConcentration;
   pstatus->TumblingRate=setTumblingRate;
   pstatus->HoppingRate=setHoppingRate;

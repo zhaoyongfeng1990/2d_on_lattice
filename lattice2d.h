@@ -34,6 +34,7 @@ typedef struct
 typedef struct
 {
   double time;
+  double totalTime;
   double GelConcentration;  //volume concentration of the gel
   double TumblingRate;
   double HoppingRate;
